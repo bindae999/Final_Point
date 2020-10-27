@@ -27,19 +27,27 @@ public class PolicyHandler{
         if(delivered.isMe()){
             //LJK
 
+            int flag=0;
             Iterator<Point> iterator = pointRepository.findAll().iterator();
             while(iterator.hasNext()){
+
                 Point pointTmp = iterator.next();
                 if((pointTmp.getMemberId() == delivered.getMemberId()) && delivered.getStatus().equals("Finish")){
                     Optional<Point> PointOptional = pointRepository.findById(pointTmp.getId());
                     Point point = PointOptional.get();
                     point.setPoint(point.getPoint()+100);
                     pointRepository.save(point);
-
+                    flag=1;
                 }
-            }
-            //LJK
 
+            }
+
+            if (flag==0 && delivered.getStatus().equals("Finish")){
+                Point point = new Point();
+                point.setMemberId(delivered.getMemberId());
+                point.setPoint((long)100);
+                pointRepository.save(point);
+            }
             System.out.println("##### listener GetPointPol : " + delivered.toJson());
         }
     }
